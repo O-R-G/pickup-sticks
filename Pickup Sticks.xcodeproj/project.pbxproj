@@ -11,6 +11,8 @@
 		079C20D721F91C6700D0229E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 079C20D621F91C6700D0229E /* Assets.xcassets */; };
 		079C20DA21F91C6700D0229E /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 079C20D821F91C6700D0229E /* MainMenu.xib */; };
 		079C20F321F91CFF00D0229E /* saverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 079C20F221F91CFF00D0229E /* saverView.swift */; };
+		93806C4125F5743700921215 /* texture.png in Resources */ = {isa = PBXBuildFile; fileRef = 93806C4025F5743700921215 /* texture.png */; };
+		93806C4225F5743700921215 /* texture.png in Resources */ = {isa = PBXBuildFile; fileRef = 93806C4025F5743700921215 /* texture.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -33,6 +35,7 @@
 		079C20E521F91CBE00D0229E /* Pickup Sticks.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Pickup Sticks.saver"; sourceTree = BUILT_PRODUCTS_DIR; };
 		079C20EB21F91CBE00D0229E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		079C20F221F91CFF00D0229E /* saverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = saverView.swift; sourceTree = "<group>"; };
+		93806C4025F5743700921215 /* texture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = texture.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -88,6 +91,7 @@
 			children = (
 				079C20F221F91CFF00D0229E /* saverView.swift */,
 				079C20EB21F91CBE00D0229E /* Info.plist */,
+				93806C4025F5743700921215 /* texture.png */,
 			);
 			path = "Pickup Sticks";
 			sourceTree = "<group>";
@@ -148,15 +152,16 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1010;
-				LastUpgradeCheck = 1010;
+				LastUpgradeCheck = 1240;
 				ORGANIZATIONNAME = "O-R-G";
 				TargetAttributes = {
 					079C20D121F91C6600D0229E = {
 						CreatedOnToolsVersion = 10.1;
+						LastSwiftMigration = 1240;
 					};
 					079C20E421F91CBE00D0229E = {
 						CreatedOnToolsVersion = 10.1;
-						LastSwiftMigration = 1010;
+						LastSwiftMigration = 1240;
 					};
 				};
 			};
@@ -184,6 +189,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				93806C4125F5743700921215 /* texture.png in Resources */,
 				079C20D721F91C6700D0229E /* Assets.xcassets in Resources */,
 				079C20DA21F91C6700D0229E /* MainMenu.xib in Resources */,
 			);
@@ -193,6 +199,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				93806C4225F5743700921215 /* texture.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -263,6 +270,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -324,6 +332,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -357,6 +366,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = 2T5W462SEL;
@@ -367,7 +377,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.o-r-g.Runner";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -376,6 +386,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = 2T5W462SEL;
@@ -386,7 +397,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.o-r-g.Runner";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -408,7 +419,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.o-r-g.Pickup-Sticks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				WRAPPER_EXTENSION = saver;
 			};
 			name = Debug;
@@ -430,7 +441,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.o-r-g.Pickup-Sticks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				WRAPPER_EXTENSION = saver;
 			};
 			name = Release;
