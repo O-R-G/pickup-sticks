@@ -33,8 +33,11 @@ class saverView: ScreenSaverView {
         // first set rotation (eulerAngle)
         // then adjust position
         // (must be in that sequence)
-        cameraNode.eulerAngles = SCNVector3(x: -.pi/2, y: 0, z: 0);
-        cameraNode.position = SCNVector3(x: 0, y: 25, z: 0)
+        // plan view
+        // cameraNode.eulerAngles = SCNVector3(x: -.pi/2, y: 0, z: 0);
+        // cameraNode.position = SCNVector3(x: 0, y: 25, z: 0)
+        // off-axis front view
+        cameraNode.position = SCNVector3(x: 0, y: 25, z: 100)
         
         // create and add a light to the scene
         let lightNode = SCNNode()
@@ -52,17 +55,24 @@ class saverView: ScreenSaverView {
         ambientLightNode.light!.color = NSColor.darkGray
         scene.rootNode.addChildNode(ambientLightNode)
 
+        /*
         // add sticks
         // for _ in 0..<50 {
         for _ in 0..<sticks {
             let stickNode = createStickNode()
             scene.rootNode.addChildNode(stickNode)
         }
-        
-        // add floor ** todo **
-        // so that sticks have somethig to land on
-        let floorNode = createFloorNode()
-        scene.rootNode.addChildNode(floorNode)
+        */
+
+        // add floor
+        let floor = createFloor()
+        scene.rootNode.addChildNode(floor)
+
+        // add box
+        for i in 0..<10 {
+            let box = createBox(size: CGFloat(i+1))
+            scene.rootNode.addChildNode(box)
+        }
 
         // need to add pivot to change orientation before rotation
         // https://developer.apple.com/documentation/scenekit/scnnode/1408044-pivot
@@ -122,24 +132,38 @@ class saverView: ScreenSaverView {
         return stickNode
     }
 
-    func createFloorNode() -> SCNNode {
-        let floor = SCNBox(width: 100.0, height: 0.025, length: 100.0, chamferRadius: 0.0)
-        
-        // color
+    func createFloor() -> SCNNode {
+
+        let floor = SCNBox(width: 100.0, height: 1.0, length: 100.0, chamferRadius: 0.0)        
         floor.firstMaterial?.diffuse.contents = NSColor(
-                                red: 0.25,
-                                green: 0.25,
-                                blue: 0.25,
+                                red: 1.0,
+                                green: 0.0,
+                                blue: 0.0,
                                 alpha: 1.0)
         let floorNode = SCNNode(geometry: floor)
-        
-        // position
+
         floorNode.position = SCNVector3(x: 0, y: 0, z: 0)
-        
-        // physics
         floorNode.physicsBody = SCNPhysicsBody(type: .static, shape: nil)
 
         return floorNode
+    }
+
+    func createBox(size: CGFloat) -> SCNNode {
+
+        var box:SCNGeometry
+
+        box = SCNBox(width: 1.0 * size, height: 1.0 * size, length: 1.0 * size, chamferRadius: 0.0)
+        // box = SCNBox(width: 0.05 * size, height: 0.05 * size, length: 5.0 * size, chamferRadius: 0.1)
+        box.firstMaterial?.diffuse.contents = NSColor(
+                                red: 0.0,
+                                green: 1.0,
+                                blue: 0.0,
+                                alpha: 1.0)
+        let boxNode = SCNNode(geometry: box)
+        boxNode.position = SCNVector3(x: 0, y: 20 * size, z: 0)
+        boxNode.physicsBody = SCNPhysicsBody(type: .dynamic, shape: nil)
+
+        return boxNode
     }
     
     override init?(frame: NSRect, isPreview: Bool) {
