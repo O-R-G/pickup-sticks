@@ -155,7 +155,8 @@ class saverView: ScreenSaverView {
 
         var box:SCNGeometry
 
-        box = SCNBox(width: 0.05 * size, height: 0.05 * size, length: 6.0 * size, chamferRadius: 0.1)
+        // width and height and length all effect gravity substantially
+        box = SCNBox(width: 0.03 * size, height: 0.03 * size, length: 7.0 * size, chamferRadius: 0.1)
         box.firstMaterial?.diffuse.contents = NSColor(
                                 red: .random(in: 0...1),
                                 green: .random(in: 0...1),
@@ -173,6 +174,8 @@ class saverView: ScreenSaverView {
         // stickNode.rotation = SCNVector4(x: 0, y: 0, z: 1, w: .pi)
         // boxNode.runAction(SCNAction.rotateBy(x: 0, y: -stickNodePosition, z: 0, duration: 6))
         // boxNode.runAction(SCNAction.rotateBy(x: 0, y: .random(in: 0...3.141519), z: 0, duration: 0.5))
+        // boxNode.runAction(SCNAction.rotateBy(x: 0, y: .random(in: 0...1), z: 0, duration: 0.5))
+        boxNode.runAction(SCNAction.rotateBy(x: .random(in: 0...1), y: .random(in: 0...1), z: 0, duration: 0.25))
         // boxNode.runAction(SCNAction.rotateBy(x: 0, y: rotation, z: 0, duration: 0.25))
         // stickNode.runAction(SCNAction.repeatForever(SCNAction.rotateBy(x: 0, y: -stickNodePosition, z: 0, duration: 12)))
 
@@ -193,7 +196,7 @@ class saverView: ScreenSaverView {
          // openGL performs better on SS + SceneKit w/ one monitor, but Metal (default) works best on two, so using Metal
          let useopengl = [SCNView.Option.preferredRenderingAPI.rawValue: NSNumber(value: SCNRenderingAPI.openGLCore32.rawValue)]
          self.scnView = SCNView.init(frame: self.bounds, options: useopengl)
-         */
+        */
         self.scnView = SCNView.init(frame: self.bounds)
         
         //prepare it with a scene
