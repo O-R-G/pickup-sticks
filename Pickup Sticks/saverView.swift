@@ -33,11 +33,13 @@ class saverView: ScreenSaverView {
         // first set rotation (eulerAngle)
         // then adjust position
         // (must be in that sequence)
+
         // plan view
-        // cameraNode.eulerAngles = SCNVector3(x: -.pi/2, y: 0, z: 0);
-        // cameraNode.position = SCNVector3(x: 0, y: 25, z: 0)
+        cameraNode.eulerAngles = SCNVector3(x: -.pi/2, y: 0, z: 0);
+        cameraNode.position = SCNVector3(x: 0, y: 25, z: 0)
+
         // off-axis front view
-        cameraNode.position = SCNVector3(x: 0, y: 25, z: 100)
+        // cameraNode.position = SCNVector3(x: 0, y: 25, z: 100)
         
         // create and add a light to the scene
         let lightNode = SCNNode()
@@ -69,8 +71,10 @@ class saverView: ScreenSaverView {
         scene.rootNode.addChildNode(floor)
 
         // add box
-        for i in 0..<10 {
-            let box = createBox(size: CGFloat(i+1))
+        // for i in 0..<10 {
+        for i in 0..<100 {
+            // let box = createBox(size: CGFloat(i+1))
+            let box = createBox(size: CGFloat(5.0))
             scene.rootNode.addChildNode(box)
         }
 
@@ -136,7 +140,7 @@ class saverView: ScreenSaverView {
 
         let floor = SCNBox(width: 100.0, height: 1.0, length: 100.0, chamferRadius: 0.0)        
         floor.firstMaterial?.diffuse.contents = NSColor(
-                                red: 1.0,
+                                red: 0.0,
                                 green: 0.0,
                                 blue: 0.0,
                                 alpha: 1.0)
@@ -152,12 +156,19 @@ class saverView: ScreenSaverView {
 
         var box:SCNGeometry
 
-        box = SCNBox(width: 1.0 * size, height: 1.0 * size, length: 1.0 * size, chamferRadius: 0.0)
-        // box = SCNBox(width: 0.05 * size, height: 0.05 * size, length: 5.0 * size, chamferRadius: 0.1)
+        // box = SCNBox(width: 1.0 * size, height: 1.0 * size, length: 1.0 * size, chamferRadius: 0.0)
+        box = SCNBox(width: 0.05 * size, height: 0.05 * size, length: 5.0 * size, chamferRadius: 0.1)
+        /*
         box.firstMaterial?.diffuse.contents = NSColor(
                                 red: 0.0,
                                 green: 1.0,
                                 blue: 0.0,
+                                alpha: 1.0)
+        */
+        box.firstMaterial?.diffuse.contents = NSColor(
+                                red: .random(in: 0...1),
+                                green: .random(in: 0...1),
+                                blue: .random(in: 0...1),
                                 alpha: 1.0)
         let boxNode = SCNNode(geometry: box)
         boxNode.position = SCNVector3(x: 0, y: 20 * size, z: 0)
