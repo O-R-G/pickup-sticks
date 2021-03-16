@@ -1,9 +1,9 @@
 //
 //  saverView.swift
-//  tetracono
+//  Pickup Sticks
 //
-//  Created by david reinfurt on 1/2/18.
-//  Copyright © 2018 O-R-G inc. All rights reserved.
+//  Created by david reinfurt on 3/1/21.
+//  Copyright © 2020 O-R-G inc. All rights reserved.
 //
 //  http://blog.viacom.tech/2016/06/27/making-a-macos-screen-saver-in-swift-with-scenekit/
 //
@@ -36,7 +36,7 @@ class saverView: ScreenSaverView {
 
         // plan view
         cameraNode.eulerAngles = SCNVector3(x: -.pi/2, y: 0, z: 0);
-        cameraNode.position = SCNVector3(x: 0, y: 25, z: 0)
+        cameraNode.position = SCNVector3(x: 0, y: 50, z: 0)
 
         // off-axis front view
         // cameraNode.position = SCNVector3(x: 0, y: 25, z: 100)
@@ -70,15 +70,13 @@ class saverView: ScreenSaverView {
         let floor = createFloor()
         scene.rootNode.addChildNode(floor)
 
-        // add box
-        // for i in 0..<10 {
-        for i in 0..<100 {
-            // let box = createBox(size: CGFloat(i+1))
+        // add sticks
+        for i in 0..<50 {
             let box = createBox(size: CGFloat(5.0))
             scene.rootNode.addChildNode(box)
         }
 
-        // need to add pivot to change orientation before rotation
+        // need to add pivot to change orientation before rotation ?
         // https://developer.apple.com/documentation/scenekit/scnnode/1408044-pivot
   
         // retrieve the SCNView
@@ -88,16 +86,17 @@ class saverView: ScreenSaverView {
         scnView?.scene = scene
         
         // allows the user to manipulate the camera ( not needed on saver )
-        scnView?.allowsCameraControl = true
+        // scnView?.allowsCameraControl = true
         
         // show statistics such as fps and timing information
-        scnView?.showsStatistics = true
+        // scnView?.showsStatistics = true
         
         // fixes low FPS if you need it
         // scnView?.antialiasingMode = .None
     }
     
     func createStickNode() -> SCNNode {
+
         let stick = SCNBox(width: 0.025*scale, height: 0.025*scale, length: 3.0*scale, chamferRadius: 0.1)
         
         // color
@@ -156,15 +155,7 @@ class saverView: ScreenSaverView {
 
         var box:SCNGeometry
 
-        // box = SCNBox(width: 1.0 * size, height: 1.0 * size, length: 1.0 * size, chamferRadius: 0.0)
-        box = SCNBox(width: 0.05 * size, height: 0.05 * size, length: 5.0 * size, chamferRadius: 0.1)
-        /*
-        box.firstMaterial?.diffuse.contents = NSColor(
-                                red: 0.0,
-                                green: 1.0,
-                                blue: 0.0,
-                                alpha: 1.0)
-        */
+        box = SCNBox(width: 0.05 * size, height: 0.05 * size, length: 6.0 * size, chamferRadius: 0.1)
         box.firstMaterial?.diffuse.contents = NSColor(
                                 red: .random(in: 0...1),
                                 green: .random(in: 0...1),
@@ -173,6 +164,17 @@ class saverView: ScreenSaverView {
         let boxNode = SCNNode(geometry: box)
         boxNode.position = SCNVector3(x: 0, y: 20 * size, z: 0)
         boxNode.physicsBody = SCNPhysicsBody(type: .dynamic, shape: nil)
+
+
+        // position
+        let randomDouble = Double.random(in: 1..<5)
+        let rotation = CGFloat(Double.pi*2/randomDouble)
+        // stickNode.position = SCNVector3(x: 0, y: offset, z: 0)
+        // stickNode.rotation = SCNVector4(x: 0, y: 0, z: 1, w: .pi)
+        // boxNode.runAction(SCNAction.rotateBy(x: 0, y: -stickNodePosition, z: 0, duration: 6))
+        // boxNode.runAction(SCNAction.rotateBy(x: 0, y: .random(in: 0...3.141519), z: 0, duration: 0.5))
+        // boxNode.runAction(SCNAction.rotateBy(x: 0, y: rotation, z: 0, duration: 0.25))
+        // stickNode.runAction(SCNAction.repeatForever(SCNAction.rotateBy(x: 0, y: -stickNodePosition, z: 0, duration: 12)))
 
         return boxNode
     }
