@@ -2,4 +2,5 @@
 + drop from perpendicular or parallel
 x sticks to be still after drop? (physics)
 / open multiple copies (for testing) in terminal
-- remove sticks one at a time over some period, when finished, drop again
+/ remove sticks one at a time over some period, when finished, drop again
+/ resolve animation sequence, does it restart after a while?

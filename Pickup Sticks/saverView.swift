@@ -1,3 +1,4 @@
+
 //
 //  saverView.swift
 //  Pickup Sticks
@@ -16,8 +17,9 @@ class saverView: ScreenSaverView {
     
     var scnView: SCNView!
     var scale: CGFloat = 5.0
-    // var offset: CGFloat = 10.0   // stick y-offset from origin
     var sticks: Int = 40   
+
+    /* init */
 
     func prepareSceneKitView() {
         
@@ -90,8 +92,44 @@ class saverView: ScreenSaverView {
         // scnView?.loops = true
     }
 
+    override init?(frame: NSRect, isPreview: Bool) {
+        
+        super.init(frame: frame, isPreview: isPreview)
+        
+        // not needed, but check in case we re-use later
+        for subview in self.subviews {
+            subview.removeFromSuperview()
+        }
+                    
+        // initialize the sceneKit view
+        /*
+        // openGL performs better on SS + SceneKit w/ one monitor, but Metal (default) works best on two, so using Metal
+        let useopengl = [SCNView.Option.preferredRenderingAPI.rawValue: NSNumber(value: SCNRenderingAPI.openGLCore32.rawValue)]
+        self.scnView = SCNView.init(frame: self.bounds, options: useopengl)
+        */
+        self.scnView = SCNView.init(frame: self.bounds)
+        
+        //prepare it with a scene
+        prepareSceneKitView()
+        
+        //set scnView background color
+        scnView.backgroundColor = NSColor.black
+        
+        //add it in as a subview
+        self.addSubview(self.scnView)
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+    }
+
+
+    /* geometry */
+
     func createFloor(size: CGFloat) -> SCNNode {
 
+        // would be bset if this were a SCNFloor object which has no size
+        // but somehow not working
         // let floor = SCNBox(width: 100.0, height: 1.0, length: 100.0, chamferRadius: 0.0)
         let floor = SCNBox(width: size, height: 1.0, length: size, chamferRadius: 0.0)
         // let floor = SCNPlane(width: 100.0, height: 100.0)
@@ -113,8 +151,6 @@ class saverView: ScreenSaverView {
         var stick:SCNGeometry
 
         /* 
-            geometry
-            
             width and height and length all effect gravity substantially
         */
 
@@ -156,10 +192,11 @@ class saverView: ScreenSaverView {
         /*
             position
 
-            two options: perpindicular or parallel
+            two options: perpindicular or parallel to floor
 
-            rotation uses 4d vector (quaternion) to adjust rotation around a 3d vector
-            last value is how much to rotate, used to make the stix more jumbled
+            rotation uses 4d vector (quaternion) to adjust rotation around 
+            a 3d vector; last value is how much to rotate, used to make 
+            stix more jumbled
         */
 
         let perpindicular = false
@@ -180,121 +217,90 @@ class saverView: ScreenSaverView {
             https://developer.apple.com/documentation/scenekit/scnphysicsbody/
         */
 
-        stickNode.physicsBody = SCNPhysicsBody(type: .dynamic, shape: nil)                
-        // stickNode.physicsBody?.restitution = 0.85   // ? try unwrap
-        stickNode.physicsBody?.restitution = 0.1   // ? try unwrap
-        // stickNode.physicsBody?.friction = 0.5       // 0.5 default
-        stickNode.physicsBody?.friction = 0.95       // 0.5 default
-        stickNode.physicsBody?.mass = 1.0           // 1.0 is default
-        // stickNode.physicsBody?.mass = 0.0           // 0.0 means no movement
+        stickNode.physicsBody = SCNPhysicsBody(type: .dynamic, shape: nil)
+        // stickNode.physicsBody?.restitution = 0.85            // ? try unwrap
+        stickNode.physicsBody?.restitution = 0.1                
+        stickNode.physicsBody?.friction = 0.5                   // 0.5 default
+        stickNode.physicsBody?.mass = 1.0                       // 1.0 default
+        // stickNode.physicsBody?.mass = 0.0                    // 0.0 means no movement
+        // stickNode.physicsBody?.angularVelocityFactor = 0.0   // no rotation allowed
 
-// angularVelocityFactor = 0.0 means no rotation allowed
+        /*
+            animation
 
+            1. stick falls
+            2. after a while, stick stops moving (mass = 0.0)
+            3. after a longer while, stick disappears
 
+            https://stackoverflow.com/questions/29658772/animate-scnnode-forever-scenekit-swift
+            https://stackoverflow.com/questions/40929527/check-if-scnnode-scnaction-is-finished
+            this may be a mechanism for redrawing after it goes away
+        */
+        
+        // let randomDuration = Double.random(in: 10.0...100.0)
+        let randomDuration = Double.random(in: 1.0...3.0)
+        
+        let fadeOut = SCNAction.fadeOut(duration: randomDuration)
+        let fadeIn = SCNAction.fadeIn(duration: randomDuration/5.0)
+        fadeOut.timingMode = .easeInEaseOut;
+        fadeIn.timingMode = .easeInEaseOut;
+        let removeFromParentNode = SCNAction.removeFromParentNode()
+        let fadeSequence = SCNAction.sequence([fadeOut,fadeIn])
+        let fadeRemoveSequence = SCNAction.sequence([fadeOut,fadeIn,removeFromParentNode])
+        let fadeLoop = SCNAction.repeatForever(fadeSequence)
+        
+        /*
+        stickNode.runAction(fadeRemoveSequence) {
+            stickNode.physicsBody?.mass = 0.0
+            print("DONE")
+        }
+        */
+                    
+        stickNode.runAction(fadeSequence) {
+        // stickNode.runAction(fadeRemoveSequence) {
 
-/*
-    animation
-    make sticks disappear after a while (in process)
-*/
-
-// perhaps a sequence here so that first does something and then removes node from parent
-// https://stackoverflow.com/questions/29658772/animate-scnnode-forever-scenekit-swift
-// https://stackoverflow.com/questions/40929527/check-if-scnnode-scnaction-is-finished
-// completion handler is called when the action ends
-// this may be a mechanism for redrawing after it goes away
-
-// let randomDuration = Double.random(in: 10.0...100.0)
-let randomDuration = Double.random(in: 1.0...3.0)
-
-let fadeOut = SCNAction.fadeOut(duration: randomDuration)
-fadeOut.timingMode = .easeInEaseOut;
-let fadeIn = SCNAction.fadeIn(duration: randomDuration/5.0)
-fadeIn.timingMode = .easeInEaseOut;
-let removeFromParentNode = SCNAction.removeFromParentNode()
-let fadeSequence = SCNAction.sequence([fadeOut,fadeIn])
-let fadeRemoveSequence = SCNAction.sequence([fadeOut,fadeIn,removeFromParentNode])
-let fadeLoop = SCNAction.repeatForever(fadeSequence)
-
-/*
-stickNode.runAction(fadeRemoveSequence) {
-    stickNode.physicsBody?.mass = 0.0
-    print("DONE")
-}
-*/
-
-stickNode.runAction(fadeSequence) {
-    // stickNode.physicsBody?.mass = 0.0
-
-// somehow the duration does not work here
-SCNTransaction.begin()
-// SCNTransaction.setAnimationDuration(_: 2.5)
-stickNode.physicsBody?.mass = 0.0
-stickNode.opacity = 0.25
-SCNTransaction.commit()
-
-    print("DONE")
-}
-
+            // .runAction(){ completion handler } called when action ends
+            // cam also embed another action inside of this one 
+            // which may likely be useful
+        
+            // trying to use SNNTransaction but setAnimationDuration 
+            // somehow does not work here, but runs without duration
+            SCNTransaction.begin()
+            // SCNTransaction.setAnimationDuration(_: 2.5)
+            stickNode.physicsBody?.mass = 0.0            
+            stickNode.opacity = 0.5
+            SCNTransaction.commit()
+            print("DONE")
+        }
+        
         return stickNode
     }
     
-    override init?(frame: NSRect, isPreview: Bool) {
-        
-        super.init(frame: frame, isPreview: isPreview)
-        
-        // not needed, but check in case we re-use later
-        for subview in self.subviews {
-            subview.removeFromSuperview()
-        }
-                    
-        // initialize the sceneKit view
-        /*
-        // openGL performs better on SS + SceneKit w/ one monitor, but Metal (default) works best on two, so using Metal
-        let useopengl = [SCNView.Option.preferredRenderingAPI.rawValue: NSNumber(value: SCNRenderingAPI.openGLCore32.rawValue)]
-        self.scnView = SCNView.init(frame: self.bounds, options: useopengl)
-        */
-        self.scnView = SCNView.init(frame: self.bounds)
-        
-        //prepare it with a scene
-        prepareSceneKitView()
-        
-        //set scnView background color
-        scnView.backgroundColor = NSColor.black
-        
-        //add it in as a subview
-        self.addSubview(self.scnView)
-    }
-    
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-    }
-
-    /*
     func testHook() {
         // scnView?.pause()
         scnView.backgroundColor = NSColor.red
+        print("CALLED")
     }
-    */
 }
 
-
-
-
 /*
-// delegate for hooking into render loop
-// worth looking into how tetracono acheives this ... 
-// or another swift 4 sceneKit screensaver
-// or better, use an action to make stick disappear after a while
-// and that action is set on the stick when it is made
-// SCNAction
-// https://developer.apple.com/documentation/scenekit/scnaction
+    delegate for hooking into render loop
+    worth looking into how tetracono acheives this ... 
+    or another swift 4 sceneKit screensaver
+    or better, use an action to make stick disappear after a while
+    and that action is set on the stick when it is made
+
+    https://developer.apple.com/documentation/scenekit/scnaction    
+
+    not currently working
+*/
 
 extension saverView: SCNSceneRendererDelegate {
 
     // deprecated?
     // func renderer(renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
 
-    // still not being called
+    // still not being called ?
     func renderer(_ renderer:SCNSceneRenderer, updateAtTimet time:TimeInterval) {
         // spawnShape()
     
@@ -306,5 +312,4 @@ extension saverView: SCNSceneRendererDelegate {
         // https://www.raywenderlich.com/1257-scene-kit-tutorial-with-swift-part-4-render-loop
     }
 }
-*/
 
