@@ -149,12 +149,16 @@ class saverView: ScreenSaverView {
     func createStick(size: CGFloat) -> SCNNode {
 
         var stick:SCNGeometry
+        var point_l:SCNGeometry
+        var point_r:SCNGeometry
 
         /* 
             width and height and length all effect gravity substantially
         */
 
-        stick = SCNCapsule(capRadius: 0.03 * size, height: 12.0 * size)
+        stick = SCNCylinder(radius: 0.03 * size, height: 12.0 * size)
+        point_l = SCNCone(topRadius: 0.001 * size, bottomRadius: 0.03 * size, height: 1.0)
+        point_r = SCNCone(topRadius: 0.03 * size, bottomRadius: 0.001 * size, height: 1.0)
 
         /*
             color
@@ -173,43 +177,55 @@ class saverView: ScreenSaverView {
         switch colorIndex {
             case 0:
                 stick.firstMaterial?.diffuse.contents = red
+                point_l.firstMaterial?.diffuse.contents = red
+                point_r.firstMaterial?.diffuse.contents = red
             case 1:
                 stick.firstMaterial?.diffuse.contents = green
+                point_l.firstMaterial?.diffuse.contents = green
+                point_r.firstMaterial?.diffuse.contents = green
             case 2:
                 stick.firstMaterial?.diffuse.contents = blue
+                point_l.firstMaterial?.diffuse.contents = blue
+                point_r.firstMaterial?.diffuse.contents = blue
             case 3:
                 stick.firstMaterial?.diffuse.contents = yellow
+                point_l.firstMaterial?.diffuse.contents = yellow
+                point_r.firstMaterial?.diffuse.contents = yellow
             default:
                 stick.firstMaterial?.diffuse.contents = yellow
+                point_l.firstMaterial?.diffuse.contents = yellow
+                point_r.firstMaterial?.diffuse.contents = yellow
         }
 
         /*
-            node
+            node (with children)
         */
 
         let stickNode = SCNNode(geometry: stick)
 
+        let point_lNode = SCNNode(geometry: point_l)
+        let point_rNode = SCNNode(geometry: point_r)
+
+        stickNode.addChildNode(point_lNode)
+        stickNode.addChildNode(point_rNode)
+
         /*
             position
-
-            two options: perpindicular or parallel to floor
-
+ 
             rotation uses 4d vector (quaternion) to adjust rotation around 
             a 3d vector; last value is how much to rotate, used to make 
             stix more jumbled
         */
 
-        let perpindicular = false
         let randomXoffset = CGFloat.random(in: -1...1)
         let randomZoffset = CGFloat.random(in: -1...1)
         let rotationExtent = CGFloat(Double.pi/Double.random(in: 1.25...2.0))
 
-        if perpindicular {
-            stickNode.position  = SCNVector3(x: randomXoffset, y:0.1, z: randomZoffset)
-        } else {
-            stickNode.position = SCNVector3(x: randomXoffset, y: 20, z: randomZoffset)
-            stickNode.rotation = SCNVector4Make(1, 0.25, 0.5, rotationExtent)
-        }
+        point_lNode.position = SCNVector3Make(0, 6.1 * size, 0)
+        point_rNode.position = SCNVector3Make(0, -6.1 * size, 0)
+
+        stickNode.position = SCNVector3(x: randomXoffset, y: 20, z: randomZoffset)
+        stickNode.rotation = SCNVector4Make(1, 0.25, 0.5, rotationExtent)
 
         /*
             physics

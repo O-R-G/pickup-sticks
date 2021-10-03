@@ -1,6 +1,16 @@
 + add tips to sticks (capsule now, could do cone-cylinder-cone)
 + drop from perpendicular or parallel
 x sticks to be still after drop? (physics)
-/ open multiple copies (for testing) in terminal
++ open multiple copies (for testing) in terminal   
++ add tips to sticks by adding cones to cylinder ends as node children
+  https://stackoverflow.com/questions/36172987/how-to-combine-to-two-or-
+  more-scngeometry-scnnode-into-one
+
 / remove sticks one at a time over some period, when finished, drop again
-/ resolve animation sequence, does it restart after a while?
+  render loop (see ray wenderlich tutorial
+- 2.5 seconds per before disappear
+  3:33 / 40 for entire sequence
+
+- maybe better solid, not fade in fade out
+- stix try thicker
+
