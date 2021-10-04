@@ -8,9 +8,9 @@ x sticks to be still after drop? (physics)
 
 / remove sticks one at a time over some period, when finished, drop again
   render loop (see ray wenderlich tutorial
-- 2.5 seconds per before disappear
+  2.5 seconds per before disappear
   3:33 / 40 for entire sequence
 
-- maybe better solid, not fade in fade out
-- stix try thicker
+? better solid, no fade in fade out?
+? stix thicker
 

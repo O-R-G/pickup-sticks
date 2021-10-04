@@ -1,4 +1,3 @@
-
 //
 //  saverView.swift
 //  Pickup Sticks
@@ -87,7 +86,7 @@ class saverView: ScreenSaverView {
         // set up hook into renderloop for removing stix
         // https://stackoverflow.com/questions/35390959/scenekit-scnscenerendererdelegate-renderer-function-not-called
 
-        // scnView?.delegate = self
+        scnView?.delegate = self
         // scnView?.isPlaying = true
         // scnView?.loops = true
     }
@@ -123,7 +122,6 @@ class saverView: ScreenSaverView {
         super.init(coder: coder)
     }
 
-
     /* geometry */
 
     func createFloor(size: CGFloat) -> SCNNode {
@@ -133,11 +131,7 @@ class saverView: ScreenSaverView {
         // let floor = SCNBox(width: 100.0, height: 1.0, length: 100.0, chamferRadius: 0.0)
         let floor = SCNBox(width: size, height: 1.0, length: size, chamferRadius: 0.0)
         // let floor = SCNPlane(width: 100.0, height: 100.0)
-        floor.firstMaterial?.diffuse.contents = NSColor(
-                                red: 0.0,
-                                green: 0.0,
-                                blue: 0.0,
-                                alpha: 1.0)
+        floor.firstMaterial?.diffuse.contents = NSColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0)
         let floorNode = SCNNode(geometry: floor)
 
         floorNode.position = SCNVector3(x: 0, y: 0, z: 0)
@@ -291,10 +285,16 @@ class saverView: ScreenSaverView {
         
         return stickNode
     }
+
+    // this works!
     
     func testHook() {
         // scnView?.pause()
-        scnView.backgroundColor = NSColor.red
+        // scnView.backgroundColor = NSColor.red
+            // let stick = createStick(size: CGFloat(5.0))
+            // scene.rootNode.addChildNode(stick)
+
+        scnView.backgroundColor = NSColor.blue
         print("CALLED")
     }
 }
@@ -308,7 +308,9 @@ class saverView: ScreenSaverView {
 
     https://developer.apple.com/documentation/scenekit/scnaction    
 
-    not currently working
+    tetracono uses an action on each cone which runs forever:
+        
+    coneNodeNorth.runAction(SCNAction.repeatForever(SCNAction.rotateBy(x: 0, y: -2*CGFloat.pi, z: 0, duration: northConeRotationPeriod)))
 */
 
 extension saverView: SCNSceneRendererDelegate {
@@ -316,11 +318,10 @@ extension saverView: SCNSceneRendererDelegate {
     // deprecated?
     // func renderer(renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
 
-    // still not being called ?
-    func renderer(_ renderer:SCNSceneRenderer, updateAtTimet time:TimeInterval) {
-        // spawnShape()
-    
-        print("called")
+    // var spawnTime:NSTimeInterval = 0
+
+    func renderer(_ renderer:SCNSceneRenderer, updateAtTime time: TimeInterval) {    
+
         testHook()
 
         // remove a stick (ie, a node)
