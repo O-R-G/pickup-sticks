@@ -17,8 +17,9 @@ class saverView: ScreenSaverView {
     var scnView: SCNView!
     var scene: SCNScene!
     var scale: CGFloat = 5.0
-    var sticks: Int = 40   
-    var pickup:TimeInterval = 0
+    var sticktotal: Int = 40   
+    var sticksize: CGFloat = 5.0
+    var pickuptime:TimeInterval = 0
 
     func prepareSceneKitView() {
         
@@ -47,8 +48,8 @@ class saverView: ScreenSaverView {
         let floor = createFloor(size: CGFloat(100.0))   
         scene.rootNode.addChildNode(floor)
 
-        for i in 0..<sticks {
-            let stick = createStick(size: CGFloat(5.0)) 
+        for i in 0..<sticktotal {
+            let stick = createStick(size: sticksize) 
             scene.rootNode.addChildNode(stick)
         }
   
@@ -63,8 +64,8 @@ class saverView: ScreenSaverView {
         // https://stackoverflow.com/questions/35390959/scenekit-scnscenerendererdelegate-renderer-function-not-called
         scnView?.delegate = self
 
-        // scnView?.isPlaying = true
-        // scnView?.loops = true
+        // scnView?.playing = true      // optional unwap does not work
+        scnView!.isPlaying = true       // force unwrap does, not sure why
     }
 
     override init?(frame: NSRect, isPreview: Bool) {
@@ -75,7 +76,6 @@ class saverView: ScreenSaverView {
             subview.removeFromSuperview()
         }
                     
-        // initialize the sceneKit view
         // openGL performs better on SS + SceneKit w/ one monitor, but Metal (default) works best on two, so using Metal
         // let useopengl = [SCNView.Option.preferredRenderingAPI.rawValue: NSNumber(value: SCNRenderingAPI.openGLCore32.rawValue)]
         // self.scnView = SCNView.init(frame: self.bounds, options: useopengl)
@@ -88,6 +88,7 @@ class saverView: ScreenSaverView {
     }
     
     required init?(coder: NSCoder) {
+
         super.init(coder: coder)
     }
 
@@ -172,18 +173,8 @@ class saverView: ScreenSaverView {
         stickNode.physicsBody?.friction = 0.5                   // 0.5 default
         stickNode.physicsBody?.mass = 1.0                       // 1.0 default
 
-        /*  
+        // actions
 
-            1. stick falls
-            2. after a while, stick stops moving (mass = 0.0)
-            3. after a longer while, stick disappears
-
-            https://stackoverflow.com/questions/29658772/animate-scnnode-forever-scenekit-swift
-            https://stackoverflow.com/questions/40929527/check-if-scnnode-scnaction-is-finished
-            this may be a mechanism for redrawing after it goes away
-
-        */
-        
         let randomDuration = Double.random(in: 1.0...3.0)        
         let fadeOut = SCNAction.fadeOut(duration: randomDuration)
         let fadeIn = SCNAction.fadeIn(duration: randomDuration/5.0)
@@ -194,7 +185,6 @@ class saverView: ScreenSaverView {
         let fadeRemoveSequence = SCNAction.sequence([fadeOut,fadeIn,removeFromParentNode])
         let fadeLoop = SCNAction.repeatForever(fadeSequence)
         
-        /*
         stickNode.runAction(fadeSequence) {
         // stickNode.runAction(fadeRemoveSequence) {
 
@@ -211,7 +201,6 @@ class saverView: ScreenSaverView {
             SCNTransaction.commit()
             print("DONE")
         }
-        */
 
         /*
         stickNode.runAction(fadeRemoveSequence) {
@@ -222,41 +211,35 @@ class saverView: ScreenSaverView {
         return stickNode
     }
     
-    func removeStick(index: Int) {
+    func updateSticks(number: Int) {
 
-        // let sticks = scene.rootNode.childNodes.filter({ $0.name == "stick" })
-        // let indexx = Int.random(in: 0...sticks.count)
-
-        scene.rootNode.childNodes.filter({ $0.name == "stick" })[0].removeFromParentNode()
-        // scene.rootNode.childNodes.filter({ $0.name == "stick" })[indexx].removeFromParentNode()
+        let sticks = scene.rootNode.childNodes.filter({ $0.name == "stick" })
+        if (sticks.count >= number) {
+            for index in 0..<number {
+                sticks[index].removeFromParentNode()
+            }
+        } else {
+            for i in 0..<sticktotal {
+                let stick = createStick(size: sticksize)
+                scene.rootNode.addChildNode(stick)
+            }
+        }
     }
 }
 
 /*
-    delegate for hooking into render loop
-    worth looking into how tetracono acheives this ... 
-    or another swift 4 sceneKit screensaver
-    or better, use an action to make stick disappear after a while
-    and that action is set on the stick when it is made
+    render lopp delegate 
 
     https://developer.apple.com/documentation/scenekit/scnaction    
-
-    tetracono uses an action on each cone which runs forever:
-        
-    coneNodeNorth.runAction(SCNAction.repeatForever(SCNAction.rotateBy
-    (x: 0, y: -2*CGFloat.pi, z: 0, duration: northConeRotationPeriod)))
-
-    // remove a stick (ie, a node)        
-    // https://developer.apple.com/documentation/scenekit/scnscenerendererdelegate
-    // https://www.raywenderlich.com/1257-scene-kit-tutorial-with-swift-part-4-render-loop
+    https://www.raywenderlich.com/1257-scene-kit-tutorial-with-swift-part-4-render-loop
 */
 
 extension saverView: SCNSceneRendererDelegate {
 
     func renderer(_ renderer:SCNSceneRenderer, updateAtTime time: TimeInterval) {
-        if time > pickup {
-            removeStick(index: 0)
-            pickup = time + TimeInterval(Float.random(in: 0.2...1.5))
+        if time > pickuptime {
+            updateSticks(number: 1)
+            pickuptime = time + TimeInterval(Float.random(in: 0.1...0.2))
         }
     }
 }

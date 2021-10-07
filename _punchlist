@@ -5,12 +5,15 @@ x sticks to be still after drop? (physics)
 + add tips to sticks by adding cones to cylinder ends as node children
   https://stackoverflow.com/questions/36172987/how-to-combine-to-two-or-
   more-scngeometry-scnnode-into-one
-
-/ remove sticks one at a time over some period, when finished, drop again
++ remove sticks one at a time over some period, when finished, drop again
   render loop (see ray wenderlich tutorial
   2.5 seconds per before disappear
   3:33 / 40 for entire sequence
++ catch if any sticks remain before removing
++ after run out of sticks, then re-drop (repopulate sticks)
+  keep animation running or restart when needed better (see geometryfighter)
 
-? better solid, no fade in fade out?
-? stix thicker
+- review actions logic on sticks
+- better solid, no fade in fade out?
+- stix thicker?
 
