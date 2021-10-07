@@ -15,35 +15,22 @@ import Foundation
 class saverView: ScreenSaverView {
     
     var scnView: SCNView!
+    var scene: SCNScene!
     var scale: CGFloat = 5.0
     var sticks: Int = 40   
-
-    /* init */
+    var pickup:TimeInterval = 0
 
     func prepareSceneKitView() {
         
-        // create a new scene
-        let scene = SCNScene()
-        
-        // create and add a camera to the scene
+        scene = SCNScene()
         let cameraNode = SCNNode()
         cameraNode.camera = SCNCamera()
         scene.rootNode.addChildNode(cameraNode)
-        
         scene.physicsWorld.speed = 5.0  // 1.0 default ("real"time)
-                                        // 5.0 dev
-
-        // place the camera
-        // first set rotation (eulerAngle)
-        // then adjust position
-        // (must be in that sequence)
-
-        // plan view
+        // scene.physicsWorld.speed = 2.0  // 1.0 default ("real"time)
         cameraNode.eulerAngles = SCNVector3(x: -.pi/2, y: 0, z: 0);
-        // cameraNode.position = SCNVector3(x: 0, y: 30, z: 0)
         cameraNode.position = SCNVector3(x: 0, y: 60, z: 0)
         
-        // create and add a light to the scene
         let lightNode = SCNNode()
         lightNode.light = SCNLight()
         lightNode.light!.type = SCNLight.LightType.omni
@@ -51,42 +38,31 @@ class saverView: ScreenSaverView {
         lightNode.position = SCNVector3(x: 0, y: 25, z: 0)
         scene.rootNode.addChildNode(lightNode)
         
-        // create and add an ambient light to the scene
         let ambientLightNode = SCNNode()
         ambientLightNode.light = SCNLight()
         ambientLightNode.light!.type = SCNLight.LightType.ambient
         ambientLightNode.light!.color = NSColor.darkGray
         scene.rootNode.addChildNode(ambientLightNode)
 
-        // add floor
         let floor = createFloor(size: CGFloat(100.0))   
         scene.rootNode.addChildNode(floor)
 
-        // add sticks
         for i in 0..<sticks {
             let stick = createStick(size: CGFloat(5.0)) 
             scene.rootNode.addChildNode(stick)
         }
   
-        // retrieve the SCNView
         let scnView = self.scnView
-        
-        // set the scene to the view
         scnView?.scene = scene
         
-        // allows the user to manipulate the camera ( not needed on saver )
-        scnView?.allowsCameraControl = true
-        
-        // show statistics such as fps and timing information
+        scnView?.allowsCameraControl = true        
         // scnView?.showsStatistics = true
-        
-        // fixes low FPS if you need it
         // scnView?.antialiasingMode = .None
 
-        // set up hook into renderloop for removing stix
+        // renderloop hook 
         // https://stackoverflow.com/questions/35390959/scenekit-scnscenerendererdelegate-renderer-function-not-called
-
         scnView?.delegate = self
+
         // scnView?.isPlaying = true
         // scnView?.loops = true
     }
@@ -95,34 +71,25 @@ class saverView: ScreenSaverView {
         
         super.init(frame: frame, isPreview: isPreview)
         
-        // not needed, but check in case we re-use later
         for subview in self.subviews {
             subview.removeFromSuperview()
         }
                     
         // initialize the sceneKit view
-        /*
         // openGL performs better on SS + SceneKit w/ one monitor, but Metal (default) works best on two, so using Metal
-        let useopengl = [SCNView.Option.preferredRenderingAPI.rawValue: NSNumber(value: SCNRenderingAPI.openGLCore32.rawValue)]
-        self.scnView = SCNView.init(frame: self.bounds, options: useopengl)
-        */
+        // let useopengl = [SCNView.Option.preferredRenderingAPI.rawValue: NSNumber(value: SCNRenderingAPI.openGLCore32.rawValue)]
+        // self.scnView = SCNView.init(frame: self.bounds, options: useopengl)
         self.scnView = SCNView.init(frame: self.bounds)
         
-        //prepare it with a scene
         prepareSceneKitView()
-        
-        //set scnView background color
         scnView.backgroundColor = NSColor.black
         
-        //add it in as a subview
         self.addSubview(self.scnView)
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
     }
-
-    /* geometry */
 
     func createFloor(size: CGFloat) -> SCNNode {
 
@@ -146,22 +113,9 @@ class saverView: ScreenSaverView {
         var point_l:SCNGeometry
         var point_r:SCNGeometry
 
-        /* 
-            width and height and length all effect gravity substantially
-        */
-
         stick = SCNCylinder(radius: 0.03 * size, height: 12.0 * size)
         point_l = SCNCone(topRadius: 0.001 * size, bottomRadius: 0.03 * size, height: 1.0)
         point_r = SCNCone(topRadius: 0.03 * size, bottomRadius: 0.001 * size, height: 1.0)
-
-        /*
-            color
-
-            r 86%, 31%, 26%
-            g 21%, 48%, 25%
-            b 16%, 47%, 70%
-            y 93%, 87%, 34%
-        */
 
         let red = NSColor(red: 0.86, green: 0.31, blue: 0.26, alpha: 1.0)
         let green = NSColor(red: 0.21, green: 0.48, blue: 0.25, alpha: 1.0)
@@ -191,24 +145,16 @@ class saverView: ScreenSaverView {
                 point_r.firstMaterial?.diffuse.contents = yellow
         }
 
-        /*
-            node (with children)
-        */
-
         let stickNode = SCNNode(geometry: stick)
-
         let point_lNode = SCNNode(geometry: point_l)
         let point_rNode = SCNNode(geometry: point_r)
-
         stickNode.addChildNode(point_lNode)
         stickNode.addChildNode(point_rNode)
+        stickNode.name = "stick"
 
-        /*
-            position
- 
-            rotation uses 4d vector (quaternion) to adjust rotation around 
-            a 3d vector; last value is how much to rotate, used to make 
-            stix more jumbled
+        /* 
+            position uses 4d vector (quaternion) to adjust rotation around 
+            a 3d vector; last value is rotation, used to make stix more jumbled
         */
 
         let randomXoffset = CGFloat.random(in: -1...1)
@@ -221,22 +167,12 @@ class saverView: ScreenSaverView {
         stickNode.position = SCNVector3(x: randomXoffset, y: 20, z: randomZoffset)
         stickNode.rotation = SCNVector4Make(1, 0.25, 0.5, rotationExtent)
 
-        /*
-            physics
-
-            https://developer.apple.com/documentation/scenekit/scnphysicsbody/
-        */
-
         stickNode.physicsBody = SCNPhysicsBody(type: .dynamic, shape: nil)
-        // stickNode.physicsBody?.restitution = 0.85            // ? try unwrap
         stickNode.physicsBody?.restitution = 0.1                
         stickNode.physicsBody?.friction = 0.5                   // 0.5 default
         stickNode.physicsBody?.mass = 1.0                       // 1.0 default
-        // stickNode.physicsBody?.mass = 0.0                    // 0.0 means no movement
-        // stickNode.physicsBody?.angularVelocityFactor = 0.0   // no rotation allowed
 
-        /*
-            animation
+        /*  
 
             1. stick falls
             2. after a while, stick stops moving (mass = 0.0)
@@ -245,11 +181,10 @@ class saverView: ScreenSaverView {
             https://stackoverflow.com/questions/29658772/animate-scnnode-forever-scenekit-swift
             https://stackoverflow.com/questions/40929527/check-if-scnnode-scnaction-is-finished
             this may be a mechanism for redrawing after it goes away
+
         */
         
-        // let randomDuration = Double.random(in: 10.0...100.0)
-        let randomDuration = Double.random(in: 1.0...3.0)
-        
+        let randomDuration = Double.random(in: 1.0...3.0)        
         let fadeOut = SCNAction.fadeOut(duration: randomDuration)
         let fadeIn = SCNAction.fadeIn(duration: randomDuration/5.0)
         fadeOut.timingMode = .easeInEaseOut;
@@ -260,12 +195,6 @@ class saverView: ScreenSaverView {
         let fadeLoop = SCNAction.repeatForever(fadeSequence)
         
         /*
-        stickNode.runAction(fadeRemoveSequence) {
-            stickNode.physicsBody?.mass = 0.0
-            print("DONE")
-        }
-        */
-                    
         stickNode.runAction(fadeSequence) {
         // stickNode.runAction(fadeRemoveSequence) {
 
@@ -282,20 +211,24 @@ class saverView: ScreenSaverView {
             SCNTransaction.commit()
             print("DONE")
         }
-        
+        */
+
+        /*
+        stickNode.runAction(fadeRemoveSequence) {
+            print("DONE")
+        }
+        */
+
         return stickNode
     }
-
-    // this works!
     
-    func testHook() {
-        // scnView?.pause()
-        // scnView.backgroundColor = NSColor.red
-            // let stick = createStick(size: CGFloat(5.0))
-            // scene.rootNode.addChildNode(stick)
+    func removeStick(index: Int) {
 
-        scnView.backgroundColor = NSColor.blue
-        print("CALLED")
+        // let sticks = scene.rootNode.childNodes.filter({ $0.name == "stick" })
+        // let indexx = Int.random(in: 0...sticks.count)
+
+        scene.rootNode.childNodes.filter({ $0.name == "stick" })[0].removeFromParentNode()
+        // scene.rootNode.childNodes.filter({ $0.name == "stick" })[indexx].removeFromParentNode()
     }
 }
 
@@ -310,23 +243,21 @@ class saverView: ScreenSaverView {
 
     tetracono uses an action on each cone which runs forever:
         
-    coneNodeNorth.runAction(SCNAction.repeatForever(SCNAction.rotateBy(x: 0, y: -2*CGFloat.pi, z: 0, duration: northConeRotationPeriod)))
+    coneNodeNorth.runAction(SCNAction.repeatForever(SCNAction.rotateBy
+    (x: 0, y: -2*CGFloat.pi, z: 0, duration: northConeRotationPeriod)))
+
+    // remove a stick (ie, a node)        
+    // https://developer.apple.com/documentation/scenekit/scnscenerendererdelegate
+    // https://www.raywenderlich.com/1257-scene-kit-tutorial-with-swift-part-4-render-loop
 */
 
 extension saverView: SCNSceneRendererDelegate {
 
-    // deprecated?
-    // func renderer(renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
-
-    // var spawnTime:NSTimeInterval = 0
-
-    func renderer(_ renderer:SCNSceneRenderer, updateAtTime time: TimeInterval) {    
-
-        testHook()
-
-        // remove a stick (ie, a node)
-        // https://developer.apple.com/documentation/scenekit/scnscenerendererdelegate
-        // https://www.raywenderlich.com/1257-scene-kit-tutorial-with-swift-part-4-render-loop
+    func renderer(_ renderer:SCNSceneRenderer, updateAtTime time: TimeInterval) {
+        if time > pickup {
+            removeStick(index: 0)
+            pickup = time + TimeInterval(Float.random(in: 0.2...1.5))
+        }
     }
 }
 
