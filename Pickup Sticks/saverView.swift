@@ -188,7 +188,7 @@ class saverView: ScreenSaverView {
             SCNTransaction.begin()
             // SCNTransaction.setAnimationDuration(_: 2.5)
             stickNode.physicsBody?.mass = 0.0            
-            stickNode.opacity = 0.5
+            // stickNode.opacity = 0.5
             SCNTransaction.commit()
             print("DONE")
         }
