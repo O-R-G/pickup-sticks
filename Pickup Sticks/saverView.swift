@@ -45,7 +45,14 @@ class saverView: ScreenSaverView {
         ambientLightNode.light!.color = NSColor.darkGray
         scene.rootNode.addChildNode(ambientLightNode)
 
-        let floor = createFloor(size: CGFloat(100.0))   
+        var floor = SCNNode()
+        let floorGeometry = SCNFloor()
+        floorGeometry.reflectivity = 0
+        let floorMaterial = SCNMaterial()
+        floorMaterial.diffuse.contents = NSColor.black
+        floorGeometry.materials = [floorMaterial]
+        floor = SCNNode(geometry: floorGeometry)
+        floor.physicsBody = SCNPhysicsBody(type: .static, shape: nil)
         scene.rootNode.addChildNode(floor)
 
         for i in 0..<sticktotal {
@@ -57,7 +64,7 @@ class saverView: ScreenSaverView {
         scnView?.scene = scene
         
         scnView?.allowsCameraControl = true        
-        // scnView?.showsStatistics = true
+        scnView?.showsStatistics = true
         // scnView?.antialiasingMode = .None
 
         // renderloop hook 
@@ -90,22 +97,6 @@ class saverView: ScreenSaverView {
     required init?(coder: NSCoder) {
 
         super.init(coder: coder)
-    }
-
-    func createFloor(size: CGFloat) -> SCNNode {
-
-        // would be bset if this were a SCNFloor object which has no size
-        // but somehow not working
-        // let floor = SCNBox(width: 100.0, height: 1.0, length: 100.0, chamferRadius: 0.0)
-        let floor = SCNBox(width: size, height: 1.0, length: size, chamferRadius: 0.0)
-        // let floor = SCNPlane(width: 100.0, height: 100.0)
-        floor.firstMaterial?.diffuse.contents = NSColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0)
-        let floorNode = SCNNode(geometry: floor)
-
-        floorNode.position = SCNVector3(x: 0, y: 0, z: 0)
-        floorNode.physicsBody = SCNPhysicsBody(type: .static, shape: nil)
-
-        return floorNode
     }
 
     func createStick(size: CGFloat) -> SCNNode {
