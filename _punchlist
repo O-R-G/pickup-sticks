@@ -17,3 +17,4 @@ x sticks to be still after drop? (physics)
 + review and improve timeouts in renderloop delegate
 x stix thicker
 - gradually slow down sticks rolling before pickup
+- two monitors, opengl / metal performance issues
