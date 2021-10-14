@@ -17,9 +17,13 @@ class saverView: ScreenSaverView {
     var scnView: SCNView!
     var scene: SCNScene!
     var scale: CGFloat = 5.0
+    var speed: CGFloat = 2.0
     var sticktotal: Int = 40   
     var sticksize: CGFloat = 5.0
-    var pickuptime:TimeInterval = 0
+    var starttime: TimeInterval = 0.0
+    var startpickup: TimeInterval = 4.0
+    var nextpickup: TimeInterval = 0
+    var pickup = false
 
     func prepareSceneKitView() {
         
@@ -27,8 +31,7 @@ class saverView: ScreenSaverView {
         let cameraNode = SCNNode()
         cameraNode.camera = SCNCamera()
         scene.rootNode.addChildNode(cameraNode)
-        scene.physicsWorld.speed = 5.0  // 1.0 default ("real"time)
-        // scene.physicsWorld.speed = 2.0  // 1.0 default ("real"time)
+        scene.physicsWorld.speed = speed  
         cameraNode.eulerAngles = SCNVector3(x: -.pi/2, y: 0, z: 0);
         cameraNode.position = SCNVector3(x: 0, y: 60, z: 0)
         
@@ -63,8 +66,8 @@ class saverView: ScreenSaverView {
         let scnView = self.scnView
         scnView?.scene = scene
         
-        scnView?.allowsCameraControl = true        
-        scnView?.showsStatistics = true
+        // scnView?.allowsCameraControl = true        
+        // scnView?.showsStatistics = true
         // scnView?.antialiasingMode = .None
 
         // renderloop hook 
@@ -83,10 +86,10 @@ class saverView: ScreenSaverView {
             subview.removeFromSuperview()
         }
                     
-        // openGL performs better on SS + SceneKit w/ one monitor, but Metal (default) works best on two, so using Metal
-        // let useopengl = [SCNView.Option.preferredRenderingAPI.rawValue: NSNumber(value: SCNRenderingAPI.openGLCore32.rawValue)]
-        // self.scnView = SCNView.init(frame: self.bounds, options: useopengl)
-        self.scnView = SCNView.init(frame: self.bounds)
+        // openGL performs better on SS + SceneKit w/ one monitor, but Metal (default) works best on two
+        let useopengl = [SCNView.Option.preferredRenderingAPI.rawValue: NSNumber(value: SCNRenderingAPI.openGLCore32.rawValue)]
+        self.scnView = SCNView.init(frame: self.bounds, options: useopengl)
+        // self.scnView = SCNView.init(frame: self.bounds)
         
         prepareSceneKitView()
         scnView.backgroundColor = NSColor.black
@@ -164,44 +167,27 @@ class saverView: ScreenSaverView {
         stickNode.physicsBody?.friction = 0.5                   // 0.5 default
         stickNode.physicsBody?.mass = 1.0                       // 1.0 default
 
-        // actions
-
-        let randomDuration = Double.random(in: 1.0...3.0)        
-        let fadeOut = SCNAction.fadeOut(duration: randomDuration)
-        let fadeIn = SCNAction.fadeIn(duration: randomDuration/5.0)
-        fadeOut.timingMode = .easeInEaseOut;
-        fadeIn.timingMode = .easeInEaseOut;
-        let removeFromParentNode = SCNAction.removeFromParentNode()
-        let fadeSequence = SCNAction.sequence([fadeOut,fadeIn])
-        let fadeRemoveSequence = SCNAction.sequence([fadeOut,fadeIn,removeFromParentNode])
-        let fadeLoop = SCNAction.repeatForever(fadeSequence)
-        
-        stickNode.runAction(fadeSequence) {
-        // stickNode.runAction(fadeRemoveSequence) {
-
-            // .runAction(){ completion handler } called when action ends
-            // cam also embed another action inside of this one 
-            // which may likely be useful
-        
-            // trying to use SNNTransaction but setAnimationDuration 
-            // somehow does not work here, but runs without duration
-            SCNTransaction.begin()
-            // SCNTransaction.setAnimationDuration(_: 2.5)
-            stickNode.physicsBody?.mass = 0.0            
-            // stickNode.opacity = 0.5
-            SCNTransaction.commit()
-            print("DONE")
-        }
-
-        /*
-        stickNode.runAction(fadeRemoveSequence) {
-            print("DONE")
-        }
-        */
-
         return stickNode
     }
     
+
+    func stopPhysics() {
+
+        /*    
+            trying to make the sticks static rather than just no mass
+            but cant figure that out somehow (for performance)
+        
+            could also call this to repeatedly decrease the mass
+            so rolls to a stop
+        */
+
+        let sticks = scene.rootNode.childNodes.filter({ $0.name == "stick" })
+        for index in 0..<sticks.count {
+            sticks[index].physicsBody?.mass = 0.0 
+            // sticks[index].physicsBody?.type = .Dynamic
+        }
+    }
+
     func updateSticks(number: Int) {
 
         let sticks = scene.rootNode.childNodes.filter({ $0.name == "stick" })
@@ -214,24 +200,24 @@ class saverView: ScreenSaverView {
                 let stick = createStick(size: sticksize)
                 scene.rootNode.addChildNode(stick)
             }
+            pickup = false
+            starttime = 0.0
         }
     }
 }
-
-/*
-    render lopp delegate 
-
-    https://developer.apple.com/documentation/scenekit/scnaction    
-    https://www.raywenderlich.com/1257-scene-kit-tutorial-with-swift-part-4-render-loop
-*/
 
 extension saverView: SCNSceneRendererDelegate {
 
     func renderer(_ renderer:SCNSceneRenderer, updateAtTime time: TimeInterval) {
-        if time > pickuptime {
+        
+        starttime = (starttime == 0.0) ? time : starttime
+        if (time > starttime + startpickup) {
+            stopPhysics()
+            pickup = true
+        }
+        if (pickup == true && time > nextpickup) {
             updateSticks(number: 1)
-            pickuptime = time + TimeInterval(Float.random(in: 0.1...0.2))
+            nextpickup = time + TimeInterval(Float.random(in: 0.25...0.5))
         }
     }
 }
-

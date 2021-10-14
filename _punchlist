@@ -12,8 +12,8 @@ x sticks to be still after drop? (physics)
 + catch if any sticks remain before removing
 + after run out of sticks, then re-drop (repopulate sticks)
   keep animation running or restart when needed better (see geometryfighter)
-
-- review actions logic on sticks
-- better solid, no fade in fade out?
-- stix thicker?
-
++ review actions logic on sticks
++ better solid, no fade in fade out?
++ review and improve timeouts in renderloop delegate
+x stix thicker
+- gradually slow down sticks rolling before pickup
