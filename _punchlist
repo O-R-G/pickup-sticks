@@ -15,6 +15,18 @@ x sticks to be still after drop? (physics)
 + review actions logic on sticks
 + better solid, no fade in fade out?
 + review and improve timeouts in renderloop delegate
-x stix thicker
+x thicker stix
++ remove the top most stick
+  sort with closure function on presentation world position y
+
 - gradually slow down sticks rolling before pickup
+  ease out to freeze?
+
+- drop and disappear cld last 3:33?
+  ~5,5 seconds per stick removal
+
+
+- less 3d?
+
+
 - two monitors, opengl / metal performance issues

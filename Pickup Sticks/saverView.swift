@@ -14,16 +14,21 @@ import Foundation
 
 class saverView: ScreenSaverView {
     
+
     var scnView: SCNView!
     var scene: SCNScene!
     var scale: CGFloat = 5.0
-    var speed: CGFloat = 2.0
-    var sticktotal: Int = 40   
+    var speed: CGFloat = 5.0    // 2.0
+    var sticks: [SCNNode] = []
+    var sticktotal: Int = 10    // 40   
     var sticksize: CGFloat = 5.0
     var starttime: TimeInterval = 0.0
-    var startpickup: TimeInterval = 4.0
+    var startpickup: TimeInterval = 1.0 // 5.0
     var nextpickup: TimeInterval = 0
+    var intervalpickup: TimeInterval = 0.1  // 1.0
     var pickup = false
+    var debugtext: SCNText!
+    var debug = true
 
     func prepareSceneKitView() {
         
@@ -63,18 +68,25 @@ class saverView: ScreenSaverView {
             scene.rootNode.addChildNode(stick)
         }
   
+        if (debug) {
+            // print() doesnt go to stdout in runner.app
+            let debugtextnode = SCNNode()
+            debugtext = SCNText(string: "** debug **", extrusionDepth: 1)
+            debugtextnode.rotation = SCNVector4(-1, 0, 0, 1.5)
+            debugtextnode.scale = SCNVector3(x:0.05, y:0.05, z:0.05)
+            debugtextnode.geometry = debugtext
+            scene.rootNode.addChildNode(debugtextnode)
+            scnView?.allowsCameraControl = true        
+            scnView?.showsStatistics = true
+        }
+
         let scnView = self.scnView
-        scnView?.scene = scene
-        
-        // scnView?.allowsCameraControl = true        
-        // scnView?.showsStatistics = true
+        scnView?.scene = scene        
         // scnView?.antialiasingMode = .None
 
-        // renderloop hook 
-        // https://stackoverflow.com/questions/35390959/scenekit-scnscenerendererdelegate-renderer-function-not-called
+        // renderloop delegate
         scnView?.delegate = self
 
-        // scnView?.playing = true      // optional unwap does not work
         scnView!.isPlaying = true       // force unwrap does, not sure why
     }
 
@@ -169,7 +181,6 @@ class saverView: ScreenSaverView {
 
         return stickNode
     }
-    
 
     func stopPhysics() {
 
@@ -188,14 +199,30 @@ class saverView: ScreenSaverView {
         }
     }
 
+    func sortSticks() {
+
+        sticks = scene.rootNode.childNodes.filter({ $0.name == "stick" })   // better place to do this?
+        sticks.sort {
+            $0.presentation.worldPosition.y > $1.presentation.worldPosition.y
+        }
+        var sorts = ""
+        for stick in sticks {
+            sorts += String(describing: stick.presentation.worldPosition.y) + "\n"            
+            debugtext.string = sorts
+        }
+    }
+
     func updateSticks(number: Int) {
 
-        let sticks = scene.rootNode.childNodes.filter({ $0.name == "stick" })
         if (sticks.count >= number) {
+            // pick-up
             for index in 0..<number {
+                var pos = sticks[index].presentation.worldPosition
+                debugtext.string = String(describing: pos.y)
                 sticks[index].removeFromParentNode()
             }
         } else {
+            // drop
             for i in 0..<sticktotal {
                 let stick = createStick(size: sticksize)
                 scene.rootNode.addChildNode(stick)
@@ -214,10 +241,14 @@ extension saverView: SCNSceneRendererDelegate {
         if (time > starttime + startpickup) {
             stopPhysics()
             pickup = true
+            sortSticks()
         }
         if (pickup == true && time > nextpickup) {
             updateSticks(number: 1)
-            nextpickup = time + TimeInterval(Float.random(in: 0.25...0.5))
-        }
+            // nextpickup = time + TimeInterval(Float.random(in: 0.25...0.5))
+            // nextpickup = time + TimeInterval(Float.random(in: 2.0...2.01))
+            nextpickup = time + intervalpickup
+        }        
+        // debugtext.string = String(time)
     }
 }
