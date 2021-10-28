@@ -17,12 +17,12 @@ class saverView: ScreenSaverView {
     var scnView: SCNView!
     var scene: SCNScene!
     var scale: CGFloat = 5.0
-    var speed: CGFloat = 1.0    
+    var speed: CGFloat = 2.0    // 1.0 = realtime
     var sticks: [SCNNode] = []
     var sticktotal: Int = 40   
     var sticksize: CGFloat = 5.0
     var starttime: TimeInterval = 0.0
-    var pickupstart: TimeInterval = 5.0
+    var pickupstart: TimeInterval = 6.0
     var pickupnext: TimeInterval = 0.0
     var pickupinterval: TimeInterval = 5.2  // 5.2 * 40 + 5.0 = 213' = 3:33
     var pickup = false
@@ -172,7 +172,7 @@ class saverView: ScreenSaverView {
         stickNode.physicsBody?.restitution = 0.1                
         stickNode.physicsBody?.friction = 0.5                   // 0.5 default
         stickNode.physicsBody?.mass = 1.0                       // 1.0 default
-        stickNode.physicsBody?.angularDamping = 0.25            // 0.0 ... 1.0
+        // stickNode.physicsBody?.angularDamping = 0.25            // 0.0 ... 1.0
         // stickNode.physicsBody?.damping = 0.25
 
         return stickNode
