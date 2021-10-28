@@ -14,19 +14,18 @@ import Foundation
 
 class saverView: ScreenSaverView {
     
-
     var scnView: SCNView!
     var scene: SCNScene!
     var scale: CGFloat = 5.0
-    var speed: CGFloat = 1.5    // 2.0
+    var speed: CGFloat = 1.0    
     var sticks: [SCNNode] = []
-    var sticktotal: Int = 40   // 40   
+    var sticktotal: Int = 40   
     var sticksize: CGFloat = 5.0
     var starttime: TimeInterval = 0.0
-    var startpickup: TimeInterval = 4.0 // 5.0
-    var nextpickup: TimeInterval = 0.0
-    var intervalpickup: TimeInterval = 0.1  // 1.0
-    var damping: Double = 0.1
+    var pickupstart: TimeInterval = 5.0
+    var pickupnext: TimeInterval = 0.0
+    // var pickupinterval: TimeInterval = 5.2 
+    var pickupinterval: TimeInterval = 0.1 
     var pickup = false
     var debugtext: SCNText!
     var debug = true
@@ -45,7 +44,8 @@ class saverView: ScreenSaverView {
         lightNode.light = SCNLight()
         lightNode.light!.type = SCNLight.LightType.omni
         lightNode.eulerAngles = SCNVector3(x: -.pi/2, y: 0, z: 0);
-        lightNode.position = SCNVector3(x: 0, y: 25, z: 0)
+        // lightNode.position = SCNVector3(x: 0, y: 25, z: 0)
+        lightNode.position = SCNVector3(x: 0, y: 100, z: 0)
         scene.rootNode.addChildNode(lightNode)
         
         let ambientLightNode = SCNNode()
@@ -82,19 +82,14 @@ class saverView: ScreenSaverView {
         }
 
         let scnView = self.scnView
-        scnView?.scene = scene        
-        // scnView?.antialiasingMode = .None
-
-        // renderloop delegate
-        scnView?.delegate = self
-
-        scnView!.isPlaying = true       // force unwrap does, not sure why
+        scnView?.scene = scene
+        scnView?.delegate = self        // renderloop delegate
+        scnView!.isPlaying = true       
     }
 
     override init?(frame: NSRect, isPreview: Bool) {
         
         super.init(frame: frame, isPreview: isPreview)
-        
         for subview in self.subviews {
             subview.removeFromSuperview()
         }
@@ -106,7 +101,6 @@ class saverView: ScreenSaverView {
         
         prepareSceneKitView()
         scnView.backgroundColor = NSColor.black
-        
         self.addSubview(self.scnView)
     }
     
@@ -179,37 +173,18 @@ class saverView: ScreenSaverView {
         stickNode.physicsBody?.restitution = 0.1                
         stickNode.physicsBody?.friction = 0.5                   // 0.5 default
         stickNode.physicsBody?.mass = 1.0                       // 1.0 default
-        stickNode.physicsBody?.angularDamping = 0.95                       // 1.0 default
+        stickNode.physicsBody?.angularDamping = 0.25            // 0.0 ... 1.0
+        // stickNode.physicsBody?.damping = 0.25
 
         return stickNode
     }
 
     func stopPhysics() {
 
-        /*    
-            trying to make the sticks static rather than just no mass
-            but cant figure that out somehow (for performance)
-        
-            could also call this to repeatedly decrease the mass
-            so rolls to a stop
-        */
-
         for index in 0..<sticks.count {
-            sticks[index].physicsBody?.mass = 0.0
-            // sticks[index].physicsBody?.friction = 1.0
-            // sticks[index].physicsBody?.rollingFriction = 1.0
-            // sticks[index].physicsBody?.damping = 1.0
-            // sticks[index].physicsBody?.angularDamping = 1.0
-            // sticks[index].physicsBody?.friction = 1.0 
+            sticks[index].physicsBody?.damping = 1.0
+            sticks[index].physicsBody?.angularDamping = 1.0
             // sticks[index].physicsBody?.type = .Dynamic
-        }
-    }
-
-    func stoppingPhysics() {
-
-        damping *= damping
-        for index in 0..<sticks.count {
-            sticks[index].physicsBody?.angularDamping = 1.0 - damping
         }
     }
 
@@ -248,22 +223,14 @@ extension saverView: SCNSceneRendererDelegate {
     func renderer(_ renderer:SCNSceneRenderer, updateAtTime time: TimeInterval) {
         
         starttime = (starttime == 0.0) ? time : starttime
-        if (time > starttime + startpickup) {
-            // stopPhysics()
-            // pickup = true
-            
-            if (damping > 0.00001) {
-                stoppingPhysics()
-            } else {
-                damping = 0.1
-                stopPhysics()
-                pickup = true
-            }
+        if (time > starttime + pickupstart) {
+            stopPhysics()
+            pickup = true
         }
-        if (pickup == true && time > nextpickup) {
+        if (pickup == true && time > pickupnext) {
             sortSticks()
             updateSticks(number: 1)
-            nextpickup = time + intervalpickup
+            pickupnext = time + pickupinterval
         }        
     }
 }
