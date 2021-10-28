@@ -24,8 +24,7 @@ class saverView: ScreenSaverView {
     var starttime: TimeInterval = 0.0
     var pickupstart: TimeInterval = 5.0
     var pickupnext: TimeInterval = 0.0
-    // var pickupinterval: TimeInterval = 5.2 
-    var pickupinterval: TimeInterval = 0.1 
+    var pickupinterval: TimeInterval = 5.2  // 5.2 * 40 + 5.0 = 213' = 3:33
     var pickup = false
     var debugtext: SCNText!
     var debug = true
@@ -202,7 +201,7 @@ class saverView: ScreenSaverView {
             // pick-up
             for index in 0..<number {
                 if (debug) {
-                    // debugtext.string = String(describing: sticks[index].presentation.worldPosition.y)
+                    debugtext.string = String(describing: sticks[index].presentation.worldPosition.y)
                 }
                 sticks[index].removeFromParentNode()
             }
@@ -224,9 +223,10 @@ extension saverView: SCNSceneRendererDelegate {
         
         starttime = (starttime == 0.0) ? time : starttime
         if (time > starttime + pickupstart) {
-            stopPhysics()
+            stopPhysics()       
             pickup = true
         }
+
         if (pickup == true && time > pickupnext) {
             sortSticks()
             updateSticks(number: 1)
