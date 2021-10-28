@@ -18,14 +18,15 @@ class saverView: ScreenSaverView {
     var scnView: SCNView!
     var scene: SCNScene!
     var scale: CGFloat = 5.0
-    var speed: CGFloat = 5.0    // 2.0
+    var speed: CGFloat = 1.5    // 2.0
     var sticks: [SCNNode] = []
-    var sticktotal: Int = 40    // 40   
+    var sticktotal: Int = 40   // 40   
     var sticksize: CGFloat = 5.0
     var starttime: TimeInterval = 0.0
-    var startpickup: TimeInterval = 1.0 // 5.0
-    var nextpickup: TimeInterval = 0
+    var startpickup: TimeInterval = 4.0 // 5.0
+    var nextpickup: TimeInterval = 0.0
     var intervalpickup: TimeInterval = 0.1  // 1.0
+    var damping: Double = 0.1
     var pickup = false
     var debugtext: SCNText!
     var debug = true
@@ -178,6 +179,7 @@ class saverView: ScreenSaverView {
         stickNode.physicsBody?.restitution = 0.1                
         stickNode.physicsBody?.friction = 0.5                   // 0.5 default
         stickNode.physicsBody?.mass = 1.0                       // 1.0 default
+        stickNode.physicsBody?.angularDamping = 0.95                       // 1.0 default
 
         return stickNode
     }
@@ -192,10 +194,22 @@ class saverView: ScreenSaverView {
             so rolls to a stop
         */
 
-        // let sticks = scene.rootNode.childNodes.filter({ $0.name == "stick" })
         for index in 0..<sticks.count {
-            sticks[index].physicsBody?.mass = 0.0 
+            sticks[index].physicsBody?.mass = 0.0
+            // sticks[index].physicsBody?.friction = 1.0
+            // sticks[index].physicsBody?.rollingFriction = 1.0
+            // sticks[index].physicsBody?.damping = 1.0
+            // sticks[index].physicsBody?.angularDamping = 1.0
+            // sticks[index].physicsBody?.friction = 1.0 
             // sticks[index].physicsBody?.type = .Dynamic
+        }
+    }
+
+    func stoppingPhysics() {
+
+        damping *= damping
+        for index in 0..<sticks.count {
+            sticks[index].physicsBody?.angularDamping = 1.0 - damping
         }
     }
 
@@ -213,7 +227,7 @@ class saverView: ScreenSaverView {
             // pick-up
             for index in 0..<number {
                 if (debug) {
-                    debugtext.string = String(describing: sticks[index].presentation.worldPosition.y)
+                    // debugtext.string = String(describing: sticks[index].presentation.worldPosition.y)
                 }
                 sticks[index].removeFromParentNode()
             }
@@ -235,8 +249,16 @@ extension saverView: SCNSceneRendererDelegate {
         
         starttime = (starttime == 0.0) ? time : starttime
         if (time > starttime + startpickup) {
-            stopPhysics()
-            pickup = true
+            // stopPhysics()
+            // pickup = true
+            
+            if (damping > 0.00001) {
+                stoppingPhysics()
+            } else {
+                damping = 0.1
+                stopPhysics()
+                pickup = true
+            }
         }
         if (pickup == true && time > nextpickup) {
             sortSticks()
