@@ -20,7 +20,7 @@ class saverView: ScreenSaverView {
     var scale: CGFloat = 5.0
     var speed: CGFloat = 5.0    // 2.0
     var sticks: [SCNNode] = []
-    var sticktotal: Int = 10    // 40   
+    var sticktotal: Int = 40    // 40   
     var sticksize: CGFloat = 5.0
     var starttime: TimeInterval = 0.0
     var startpickup: TimeInterval = 1.0 // 5.0
@@ -192,7 +192,7 @@ class saverView: ScreenSaverView {
             so rolls to a stop
         */
 
-        let sticks = scene.rootNode.childNodes.filter({ $0.name == "stick" })
+        // let sticks = scene.rootNode.childNodes.filter({ $0.name == "stick" })
         for index in 0..<sticks.count {
             sticks[index].physicsBody?.mass = 0.0 
             // sticks[index].physicsBody?.type = .Dynamic
@@ -205,11 +205,6 @@ class saverView: ScreenSaverView {
         sticks.sort {
             $0.presentation.worldPosition.y > $1.presentation.worldPosition.y
         }
-        var sorts = ""
-        for stick in sticks {
-            sorts += String(describing: stick.presentation.worldPosition.y) + "\n"            
-            debugtext.string = sorts
-        }
     }
 
     func updateSticks(number: Int) {
@@ -217,8 +212,9 @@ class saverView: ScreenSaverView {
         if (sticks.count >= number) {
             // pick-up
             for index in 0..<number {
-                var pos = sticks[index].presentation.worldPosition
-                debugtext.string = String(describing: pos.y)
+                if (debug) {
+                    debugtext.string = String(describing: sticks[index].presentation.worldPosition.y)
+                }
                 sticks[index].removeFromParentNode()
             }
         } else {
@@ -241,14 +237,11 @@ extension saverView: SCNSceneRendererDelegate {
         if (time > starttime + startpickup) {
             stopPhysics()
             pickup = true
-            sortSticks()
         }
         if (pickup == true && time > nextpickup) {
+            sortSticks()
             updateSticks(number: 1)
-            // nextpickup = time + TimeInterval(Float.random(in: 0.25...0.5))
-            // nextpickup = time + TimeInterval(Float.random(in: 2.0...2.01))
             nextpickup = time + intervalpickup
         }        
-        // debugtext.string = String(time)
     }
 }
