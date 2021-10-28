@@ -27,7 +27,7 @@ class saverView: ScreenSaverView {
     var pickupinterval: TimeInterval = 5.2  // 5.2 * 40 + 5.0 = 213' = 3:33
     var pickup = false
     var debugtext: SCNText!
-    var debug = true
+    var debug = false
 
     func prepareSceneKitView() {
         
