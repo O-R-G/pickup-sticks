@@ -22,4 +22,4 @@ x drop and disappear cld last 3:33? ~5,5 seconds per stick removal
 x gradually slow down sticks rolling before pickup
 + less 3d? (adjusted position of spot light)
 - two monitors, opengl / metal performance issues
-  stopPhysics using changing type to static instead of dynamic
+- stopPhysics using changing type to static instead of dynamic
