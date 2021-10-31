@@ -11,8 +11,8 @@
 		079C20D721F91C6700D0229E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 079C20D621F91C6700D0229E /* Assets.xcassets */; };
 		079C20DA21F91C6700D0229E /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 079C20D821F91C6700D0229E /* MainMenu.xib */; };
 		079C20F321F91CFF00D0229E /* saverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 079C20F221F91CFF00D0229E /* saverView.swift */; };
-		93806C4125F5743700921215 /* texture.png in Resources */ = {isa = PBXBuildFile; fileRef = 93806C4025F5743700921215 /* texture.png */; };
-		93806C4225F5743700921215 /* texture.png in Resources */ = {isa = PBXBuildFile; fileRef = 93806C4025F5743700921215 /* texture.png */; };
+		93FBB8B5272EF8DF00A2103A /* thumbnail.png in Resources */ = {isa = PBXBuildFile; fileRef = 93FBB8B3272EF8DF00A2103A /* thumbnail.png */; };
+		93FBB8B6272EF8DF00A2103A /* thumbnail@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 93FBB8B4272EF8DF00A2103A /* thumbnail@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -35,7 +35,8 @@
 		079C20E521F91CBE00D0229E /* Pickup Sticks.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Pickup Sticks.saver"; sourceTree = BUILT_PRODUCTS_DIR; };
 		079C20EB21F91CBE00D0229E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		079C20F221F91CFF00D0229E /* saverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = saverView.swift; sourceTree = "<group>"; };
-		93806C4025F5743700921215 /* texture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = texture.png; sourceTree = "<group>"; };
+		93FBB8B3272EF8DF00A2103A /* thumbnail.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = thumbnail.png; sourceTree = "<group>"; };
+		93FBB8B4272EF8DF00A2103A /* thumbnail@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "thumbnail@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,8 +91,9 @@
 			isa = PBXGroup;
 			children = (
 				079C20F221F91CFF00D0229E /* saverView.swift */,
+				93FBB8B3272EF8DF00A2103A /* thumbnail.png */,
+				93FBB8B4272EF8DF00A2103A /* thumbnail@2x.png */,
 				079C20EB21F91CBE00D0229E /* Info.plist */,
-				93806C4025F5743700921215 /* texture.png */,
 			);
 			path = "Pickup Sticks";
 			sourceTree = "<group>";
@@ -189,7 +191,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				93806C4125F5743700921215 /* texture.png in Resources */,
 				079C20D721F91C6700D0229E /* Assets.xcassets in Resources */,
 				079C20DA21F91C6700D0229E /* MainMenu.xib in Resources */,
 			);
@@ -199,7 +200,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				93806C4225F5743700921215 /* texture.png in Resources */,
+				93FBB8B5272EF8DF00A2103A /* thumbnail.png in Resources */,
+				93FBB8B6272EF8DF00A2103A /* thumbnail@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

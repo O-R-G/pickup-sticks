@@ -25,5 +25,5 @@ x gradually slow down sticks rolling before pickup
 + drop speed and timing refine
 x two monitors, opengl / metal performance issues
 x stopPhysics using changing type to static instead of dynamic 
-- preview icon xcode?
-- .dmg release candidate 2
++ preview icon xcode?
++ .dmg release candidate 2

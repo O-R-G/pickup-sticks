@@ -64,7 +64,7 @@ class saverView: ScreenSaverView {
         floor.physicsBody = SCNPhysicsBody(type: .static, shape: nil)
         scene.rootNode.addChildNode(floor)
 
-        for i in 0..<sticktotal {
+        for _ in 0..<sticktotal {
             let stick = createStick(size: sticksize) 
             scene.rootNode.addChildNode(stick)
         }
@@ -218,7 +218,7 @@ class saverView: ScreenSaverView {
             }
         } else {
             // drop
-            for i in 0..<sticktotal {
+            for _ in 0..<sticktotal {
                 let stick = createStick(size: sticksize)
                 scene.rootNode.addChildNode(stick)
             }
