@@ -21,10 +21,11 @@ class saverView: ScreenSaverView {
     var sticks: [SCNNode] = []
     var sticktotal: Int = 40   
     var sticksize: CGFloat = 5.0
+    var damping: CGFloat = 0.0
     var starttime: TimeInterval = 0.0
-    var pickupstart: TimeInterval = 6.0
+    var pickupstart: TimeInterval = 3.0
     var pickupnext: TimeInterval = 0.0
-    var pickupinterval: TimeInterval = 5.2  // 5.2 * 40 + 5.0 = 213' = 3:33
+    var pickupinterval: TimeInterval = 5.25  // 5.25 * 40 + 3.0 = 213' = 3:33
     var pickup = false
     var debugtext: SCNText!
     var debug = false
@@ -172,8 +173,8 @@ class saverView: ScreenSaverView {
         stickNode.physicsBody?.restitution = 0.1                
         stickNode.physicsBody?.friction = 0.5                   // 0.5 default
         stickNode.physicsBody?.mass = 1.0                       // 1.0 default
-        // stickNode.physicsBody?.angularDamping = 0.25            // 0.0 ... 1.0
-        // stickNode.physicsBody?.damping = 0.25
+        stickNode.physicsBody?.angularDamping = damping         // 0.0 ... 1.0
+        stickNode.physicsBody?.damping = damping
 
         return stickNode
     }
@@ -184,6 +185,16 @@ class saverView: ScreenSaverView {
             sticks[index].physicsBody?.damping = 1.0
             sticks[index].physicsBody?.angularDamping = 1.0
             // sticks[index].physicsBody?.type = .Dynamic
+        }
+    }
+
+    func stoppingPhysics() {
+
+        // not currently used as does not update unless scenegraph is updated
+        for index in 0..<sticks.count {
+            sticks[index].physicsBody = sticks[index].presentation.physicsBody
+            sticks[index].physicsBody!.damping = 1.0
+            sticks[index].physicsBody!.angularDamping = 1.0
         }
     }
 
@@ -201,7 +212,7 @@ class saverView: ScreenSaverView {
             // pick-up
             for index in 0..<number {
                 if (debug) {
-                    debugtext.string = String(describing: sticks[index].presentation.worldPosition.y)
+                    // debugtext.string = String(describing: sticks[index].presentation.worldPosition.y)
                 }
                 sticks[index].removeFromParentNode()
             }
@@ -222,11 +233,21 @@ extension saverView: SCNSceneRendererDelegate {
     func renderer(_ renderer:SCNSceneRenderer, updateAtTime time: TimeInterval) {
         
         starttime = (starttime == 0.0) ? time : starttime
-        if (time > starttime + pickupstart) {
-            stopPhysics()       
-            pickup = true
+        if (debug) {
+            debugtext.string = String(describing: starttime) + "\n" + String(describing: time)
         }
-
+        if (time > starttime + pickupstart) {
+            stopPhysics()
+            pickup = true
+        } 
+        /*
+        else {
+            if (debug) {
+                debugtext.string = "stoppingPhysics"
+            }
+            stoppingPhysics()
+        }
+        */
         if (pickup == true && time > pickupnext) {
             sortSticks()
             updateSticks(number: 1)

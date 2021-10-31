@@ -22,9 +22,8 @@ x drop and disappear cld last 3:33? ~5,5 seconds per stick removal
 x gradually slow down sticks rolling before pickup
 + less 3d? (adjusted position of spot light)
 + .dmg release candidate 1
-
-- drop speed and timing refine
-- two monitors, opengl / metal performance issues
-- stopPhysics using changing type to static instead of dynamic 
++ drop speed and timing refine
+x two monitors, opengl / metal performance issues
+x stopPhysics using changing type to static instead of dynamic 
 - preview icon xcode?
 - .dmg release candidate 2
