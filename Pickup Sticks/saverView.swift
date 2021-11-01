@@ -21,12 +21,14 @@ class saverView: ScreenSaverView {
     var sticks: [SCNNode] = []
     var sticktotal: Int = 40   
     var sticksize: CGFloat = 5.0
-    var damping: CGFloat = 0.0
+    var damping: CGFloat = 0.25
     var starttime: TimeInterval = 0.0
     var pickupstart: TimeInterval = 3.0
+    var pickupfirst: TimeInterval = 6.0
     var pickupnext: TimeInterval = 0.0
-    var pickupinterval: TimeInterval = 5.25  // 5.25 * 40 + 3.0 = 213' = 3:33
+    var pickupinterval: TimeInterval = 5.30769  // 5.175 * 39 + 6.0 = 213' = 3:33
     var pickup = false
+    var stopping = false
     var debugtext: SCNText!
     var debug = false
 
@@ -182,19 +184,7 @@ class saverView: ScreenSaverView {
     func stopPhysics() {
 
         for index in 0..<sticks.count {
-            sticks[index].physicsBody?.damping = 1.0
-            sticks[index].physicsBody?.angularDamping = 1.0
-            // sticks[index].physicsBody?.type = .Dynamic
-        }
-    }
-
-    func stoppingPhysics() {
-
-        // not currently used as does not update unless scenegraph is updated
-        for index in 0..<sticks.count {
-            sticks[index].physicsBody = sticks[index].presentation.physicsBody
-            sticks[index].physicsBody!.damping = 1.0
-            sticks[index].physicsBody!.angularDamping = 1.0
+            sticks[index].physicsBody?.type = .static
         }
     }
 
@@ -233,25 +223,25 @@ extension saverView: SCNSceneRendererDelegate {
     func renderer(_ renderer:SCNSceneRenderer, updateAtTime time: TimeInterval) {
         
         starttime = (starttime == 0.0) ? time : starttime
-        if (debug) {
-            debugtext.string = String(describing: starttime) + "\n" + String(describing: time)
-        }
+            
         if (time > starttime + pickupstart) {
             stopPhysics()
-            pickup = true
-        } 
-        /*
-        else {
-            if (debug) {
-                debugtext.string = "stoppingPhysics"
-            }
-            stoppingPhysics()
-        }
-        */
-        if (pickup == true && time > pickupnext) {
             sortSticks()
+            stopping = true
+        }
+
+        if (stopping == true && time > starttime + pickupfirst) {
+            pickup  = true
+        } 
+
+        if (pickup == true && time > pickupnext) {
             updateSticks(number: 1)
             pickupnext = time + pickupinterval
-        }        
+        }
+
+        if (debug) {
+            let currenttime = time - starttime
+            debugtext.string = String(describing: currenttime) 
+        }
     }
 }
